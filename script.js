@@ -1,4 +1,10 @@
 // helpers
+const formatSE = (episode) => {
+  // if (episodeSeason < 10 || episodeNumber < 10) no need pad is auto {
+  const seasonStr = episode.season.toString().padStart(2, "0"); // Fixed: episodeSeason -> episode.season
+  const episodeStr = episode.number.toString().padStart(2, "0"); // Fixed: episodeNumber -> episode.number
+  return `S${seasonStr}E${episodeStr}`;
+};
 
 //create HTML structure of a card
 `<div class="tvShowCard">
@@ -18,11 +24,14 @@ const generateCard = (episode) => {
 
   const episodeName = document.createElement("h5");
   episodeName.classList.add("episodeName");
-  episodeName.textContent = episode.name;
+  episodeName.innerHTML = episode.name;
 
+  //format episode code
   const episodeCode = document.createElement("p");
+  // const episodeSeason = document.createElement("p");
+  // const episodeNumber = document.createElement("p");
   episodeCode.classList.add("episodeCode");
-  episodeCode.textContent = formattedSE(episode.season, episode.number);
+  episodeCode.textContent = formatSE(episode); // Set the formatted episode code to textContent
 
   const episodeImage = document.createElement("img");
   episodeImage.classList.add("episodeImage");
@@ -30,7 +39,7 @@ const generateCard = (episode) => {
 
   const episodeDescription = document.createElement("p");
   episodeDescription.classList.add("episodeDescription");
-  episodeDescription.textContent = episode.summary;
+  episodeDescription.innerHTML = episode.summary;
 
   //appends all to card
   episodeCard.appendChild(episodeName);
@@ -40,16 +49,6 @@ const generateCard = (episode) => {
 
   return episodeCard;
 };
-
-function formattedSE(episodeSeason, episodeNumber) {
-  if (episodeSeason < 10 || episodeNumber < 10) {
-    const seasonStr = episodeSeason.toString().padStart(2, "0");
-    const episodeStr = episodeNumber.toString().padStart(2, "0");
-    return `S${seasonStr}E${episodeStr}`;
-  } else {
-    return `S${episodeSeason}E${episodeNumber}`;
-  }
-}
 
 function makePageForEpisodes(episodeList) {
   const tvShowsContainer = document.querySelector(".tvShowsContainer");
