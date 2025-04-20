@@ -10,6 +10,19 @@
 
   <body>
     <div id="root">
+      <div class="searchBox">
+        <input type="text" id="searchInput" placeholder="Find your episode" />
+        <button id="findButton">Search</button>
+        <button id="clearButton">Clear</button>
+
+        <div class="counterDiv hidden">
+          <p id="resultCounter">Showing</p>
+          <p id="howManyMatch"></p>
+          <p>/</p>
+          <p id="howManyInTotal"></p>
+        </div>
+      </div>
+
       <div class="tvShowsContainer">
         <!-- <div class="tvShowCard">
           <h5 class="episodeName">fff</h5>

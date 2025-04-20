@@ -32,12 +32,80 @@
   margin: 0.5rem 0;
   color: navy;
   font-weight: 600;
+  max-width: 350px;
 }
 
 .episodeCode {
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 
 .episodeDescription {
-  font-size: 0.8rem;
+  font-size: 1rem;
+  max-width: 350px;
+}
+
+/*search box lvl 200*/
+.searchBox {
+  width: 100%;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid lightgray;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+#searchInput {
+  width: 1400px;
+  max-width: 1400px;
+  padding: 1rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+#findButton,
+#clearButton {
+  padding: 1rem 0.5rem;
+  font-weight: 600;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+#clearButton {
+  color: #white;
+  background-color: lightgrey;
+}
+
+#findButton:hover {
+  background-color: darkgrey;
+}
+
+#resultCounter,
+#howManyMatch,
+#howManyInTotal {
+  font-size: 1rem;
+  color: grey;
+  font-style: italic;
+}
+
+#resultCounter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*hidden div*/
+.counterDiv {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem auto;
+}
+.hidden {
+  display: none;
 }
