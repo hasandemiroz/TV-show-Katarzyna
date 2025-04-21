@@ -4,6 +4,13 @@
   color: #343232;
 }
 
+h1 {
+  font-size: 3rem;
+}
+h2 {
+  font-size: 2rem;
+}
+
 .tvShowsContainer {
   display: flex;
   flex-wrap: wrap;
@@ -11,7 +18,8 @@
   padding: 1rem;
 }
 
-.tvShowCard {
+.tvShowCard,
+.showCard {
   padding: 1rem;
   border: 1px solid #b4b0b0;
   border-radius: 6px;
@@ -27,7 +35,8 @@
   border-radius: 6px;
 }
 
-.episodeName {
+.episodeName,
+.showName {
   font-size: 2rem;
   margin: 0.5rem 0;
   color: navy;
@@ -39,14 +48,17 @@
   font-size: 0.8rem;
 }
 
-.episodeDescription {
+.episodeDescription,
+.showSummary {
   font-size: 1rem;
   max-width: 350px;
 }
 
 /*search box lvl 200*/
 .searchBox,
-.liveSearchBox {
+.liveSearchBox,
+.tabs,
+.showSearchBox {
   width: 100%;
   padding: 1rem;
   background-color: #f9f9f9;
@@ -54,6 +66,10 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   box-sizing: border-box;
+}
+
+.showSearchBox {
+  margin-bottom: 1rem;
 }
 .liveSearchBox {
   margin-top: 1rem;
@@ -67,8 +83,10 @@
   font-size: 1rem;
 }
 
-#searchInput {
-  width: 1000px;
+#searchInput,
+#liveSearchInput,
+#showSearchInput {
+  min-width: 400px;
   max-width: 1000px;
   padding: 1rem 0.5rem;
   border: 1px solid #ccc;
@@ -76,17 +94,13 @@
   font-size: 1rem;
 }
 
-#liveSearchInput {
-  width: 1000px;
-  max-width: 1000px;
-  padding: 1rem 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
+.button {
+  cursor: pointer;
 }
 
 #findButton,
-#clearButton {
+#clearButton,
+#findShowButton {
   padding: 1rem 0.5rem;
   font-weight: 600;
   background-color: black;
@@ -94,12 +108,11 @@
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  cursor: pointer;
   margin-top: 1rem;
 }
 
 #clearButton {
-  color: white;
+  color: black;
   background-color: lightgrey;
 }
 
@@ -109,9 +122,10 @@
 
 #resultCounter,
 #howManyMatch,
-#howManyInTotal {
+#howManyInTotal,
+.showDetails {
   font-size: 1rem;
-  color: grey;
+  color: rgb(70, 69, 69);
   font-style: italic;
 }
 
@@ -139,4 +153,26 @@
 
 .hidden {
   display: none;
+}
+
+.tabs {
+  padding: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.active {
+  font-size: 1.5rem;
+  color: rgb(61, 61, 61);
+}
+
+.inactive {
+  color: rgb(61, 61, 61);
+}
+
+.allShowListingsContainerLook {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }

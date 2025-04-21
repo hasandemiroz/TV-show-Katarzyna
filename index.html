@@ -9,27 +9,74 @@
   </head>
 
   <body>
+    <h1>TV Show Project</h1>
     <div id="root">
-      <!-- this is for fetch -->
-      <div class="waiting hidden">
-        <h5>Loading, please wait...</h5>
+      <div class="tabs">
+        <button
+          id="showsButton"
+          class="button active"
+          aria-label="view show listings"
+        >
+          Listing of all shows
+        </button>
+        <button
+          id="episodesButton"
+          class="button inactive"
+          aria-label="view episode listings"
+        >
+          Episodes Listing
+        </button>
       </div>
+    </div>
 
-      <div class="searchBox">
-        <input type="text" id="searchInput" placeholder="Find your episode" />
-        <button id="findButton">Search</button>
-        <button id="clearButton">Clear</button>
+    <!-- this is for fetch -->
+    <div class="waiting hidden">
+      <h5>Loading, please wait...</h5>
+    </div>
 
-        <div class="counterDiv hidden">
-          <p id="resultCounter">Showing</p>
-          <p id="howManyMatch"></p>
-          <p>/</p>
-          <p id="howManyInTotal"></p>
-        </div>
+    <div class="showSearchBox">
+      <input
+        type="text"
+        id="showSearchInput"
+        placeholder="Search show names, genres, and summary texts"
+      />
+      <button id="findShowButton" aria-label="Search Shows BY" class="button">
+        Search Shows
+      </button>
+    </div>
+
+    <div class="searchBox">
+      <label for="select">Select</label>
+      <select id="select">
+        <option value="">from shows</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Find your episode" />
+      <button id="findButton" aria-label="Search" class="button">Search</button>
+      <button id="clearButton" aria-label="Clear your search" class="button">
+        Clear
+      </button>
+
+      <div class="counterDiv hidden">
+        <p id="resultCounter">Showing</p>
+        <p id="howManyMatch"></p>
+        <p>/</p>
+        <p id="howManyInTotal"></p>
       </div>
+    </div>
 
-      <div class="tvShowsContainer">
-        <!-- <div class="tvShowCard">
+    <div class="liveSearchBox">
+      <input
+        type="text"
+        id="liveSearchInput"
+        placeholder="Try the live search for your show episodes"
+      />
+    </div>
+
+    <!-- 500 view allshows -->
+    <div class="allShowListingsContainer"></div>
+
+    <div class="tvShowsContainer">
+      <!-- <div class="tvShowCard">
           <h5 class="episodeName">fff</h5>
           <p class="episodeCode">fff</p>
           <img
@@ -39,11 +86,10 @@
           />
           <p class="episodeDescription"></p>
         </div> -->
-      </div>
     </div>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
-    <script src="episodes.js"></script>
+    <!-- <script src="episodes.js"></script> -->
 
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>

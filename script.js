@@ -16,7 +16,7 @@ const formatSE = (episode) => {
 
 //create HTML structure of a card
 `<div class="tvShowCard">
-          <h5 class="episodeName">fff</h5>
+          <h2 class="episodeName">fff</h2>
           <p class="episodeCode">fff</p>
           <img
             class="episodeImage"
@@ -38,7 +38,7 @@ const generateCard = (episode) => {
   const episodeCard = document.createElement("div");
   episodeCard.classList.add("tvShowCard");
 
-  const episodeName = document.createElement("h5");
+  const episodeName = document.createElement("h2");
   episodeName.classList.add("episodeName");
   episodeName.innerHTML = episode.name;
 
@@ -51,6 +51,7 @@ const generateCard = (episode) => {
 
   const episodeImage = document.createElement("img");
   episodeImage.classList.add("episodeImage");
+  episodeImage.alt = "image showing tv show episode";
   // episodeImage.src = "https://picsum.photos/200/300"; placeholder img for the time being
   // if image is missing for some reason, placehodlder so the content looks consistent
   episodeImage.src = episode.image?.medium || "https://picsum.photos/300/450";
@@ -83,10 +84,12 @@ function makePageForEpisodes(episodeList) {
 
 //do not change getAllEpisodes function
 function setup() {
-  fetchOnce();
+  getSHowsWhenUserVisits();
   // allEpisodes = getAllEpisodes(); //edited to use for filter - replaced by fetchOnce
   fetchAllShows();
+  fetchOnce();
   makePageForEpisodes(allEpisodes);
+  sortAndAddToDropdown();
 }
 
 ///////////////////////////////
@@ -103,7 +106,6 @@ const findEpisode = () => {
   // filter shown based on title including the search term
   //taken from allEpisodes
   const filteredEpisodes = allEpisodes.filter((episode) => {
-    //this was surprisingly frustrating. toLowerCase on both props covers the check for the case insensitive search
     return episode.name.toLowerCase().includes(userSearchTerm.toLowerCase());
   });
 
@@ -255,10 +257,11 @@ liveSearchInput.addEventListener("input", liveSearch);
 
 // here's the fixed so the error message works and deosn't get stuck on loading
 
-const endpoint = "https://api.tvmaze.com/shows/82/episodes";
-
 // implementation with correct error message
+
 const fetchEpisodes = async () => {
+  const endpoint = "https://api.tvmaze.com/shows/82/episodes";
+
   try {
     const response = await fetch(endpoint);
 
@@ -324,27 +327,84 @@ let dropdownShowsArray = [];
 // episodes can beaccessed by id later
 let dropdownShowEpisodes = {};
 
+//store shows here so other funcitons can access them easily
+let allFetchedShowsToPopulateToOtherArrays = [];
+
 const endpointAllShows = "https://api.tvmaze.com/shows";
 
-// fetch all shows from the API and add them to the dropdown
+// // fetch all shows from the API and add them to the dropdown
+// async function fetchAllShows() {
+//   const response = await fetch(endpointAllShows);
+
+//   // check if response is successful
+//   const showsFromAPI = await response.json();
+
+//   // place the shows in dropdownShowsArray
+//   dropdownShowsArray = showsFromAPI;
+
+//   // sort shows alphabetically and case-insensitive requirement
+//   // sample solution
+//   // function insensitive(s1, s2) {
+//   //   var s1lower = s1.toLowerCase();
+//   //   var s2lower = s2.toLowerCase();
+//   //   return s1lower > s2lower ? 1 : (s1lower < s2lower ? -1 : 0);
+//   // }
+//   //repurposed
+
+//   // sort shows and add to dopdown
+//   const sortShows = (s1, s2) => {
+//     const showTitleA = s1.toLowerCase();
+//     const showTitleB = s2.toLowerCase();
+//     return showTitleA > showTitleB ? 1 : showTitleA < showTitleB ? -1 : 0;
+//   };
+
+//   // sort alprabetically show name = title
+//   dropdownShowsArray.sort((a, b) => sortShows(a.name, b.name));
+//   //a more elegant solution found is
+//   // dropdownShowsArray = showsFromAPI.sort((a, b) =>
+//   //   a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+//   // );
+
+//   // add all shows to dropdown
+//   addShowsToDropdown(dropdownShowsArray);
+// }
+
+// i split the above into fetch all shows and add shows to dropdownas separate functions to
+// keep fetched shows separate for use of other functions
+
+///this implementation caused the dropdown to fully break
+// Fetch all shows from the API
+// async function fetchAllShows() {
+//   const response = await fetch(endpointAllShows);
+//   allFetchedShowsToPopulateToOtherArrays = await response.json();
+// }
+// // this is sort part
+// function sortAndAddToDropdown() {
+//   // Assign to dropdown array
+//   dropdownShowsArray = [...allFetchedShowsToPopulateToOtherArrays];
+
+//   // Sort shows alphabetically and case-insensitively
+//   dropdownShowsArray.sort((a, b) =>
+//     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+//   );
+
+//   // Add sorted shows to dropdown
+//   addShowsToDropdown(dropdownShowsArray);
+// }
+
+//after separating into 2 functions, dropdown stopped populating
+//so I am returning to the previous implementation and will have to fetch all shows again
+
+///continuting with the previous implementation
+// // fetch all shows from the API and add them to the dropdown
 async function fetchAllShows() {
   const response = await fetch(endpointAllShows);
 
-  // check if response is successful
   const showsFromAPI = await response.json();
 
   // place the shows in dropdownShowsArray
   dropdownShowsArray = showsFromAPI;
 
-  // sort shows alphabetically and case-insensitive requirement
-  // sample solution
-  // function insensitive(s1, s2) {
-  //   var s1lower = s1.toLowerCase();
-  //   var s2lower = s2.toLowerCase();
-  //   return s1lower > s2lower ? 1 : (s1lower < s2lower ? -1 : 0);
-  // }
-  //repurposed
-  // Define the function that will compare two show names
   const sortShows = (s1, s2) => {
     const showTitleA = s1.toLowerCase();
     const showTitleB = s2.toLowerCase();
@@ -353,10 +413,6 @@ async function fetchAllShows() {
 
   // sort alprabetically show name = title
   dropdownShowsArray.sort((a, b) => sortShows(a.name, b.name));
-  //a more elegant solution found is
-  // dropdownShowsArray = showsFromAPI.sort((a, b) =>
-  //   a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  // );
 
   // add all shows to dropdown
   addShowsToDropdown(dropdownShowsArray);
@@ -398,8 +454,9 @@ select.addEventListener("change", function (event) {
   }
 });
 
-// grab episodes for a selected show this is causing an
+// grabbin episodes for a selected show this is causing an
 // issue of multiple fetches and stopped working after my attempts to fix
+
 // async function fetchEpisodesForShow(showId) {
 //   // requirement to only fetch once check if inside object dropdownShowEpisodes
 //   if (dropdownShowEpisodes[showId]) {
@@ -414,8 +471,8 @@ select.addEventListener("change", function (event) {
 //   return episodes;
 // }
 
-// so the above is split ito 2
-// / function to fetch episodes per show once and store them
+// so the above function is split ito 2 to fix the issue
+// function to fetch episodes per show once and store them
 async function fetchEpisodesForShow(showId) {
   const endpointId = `https://api.tvmaze.com/shows/${showId}/episodes`;
 
@@ -440,5 +497,115 @@ async function getEpisodesForShowById(showId) {
     return await fetchEpisodesForShow(showId);
   }
 }
+///////////////////////lvl 500
+const episodesButton = document.querySelector("#episodesButton");
+const showsButton = document.querySelector("#showsButton");
+const allShowsContainer = document.querySelector(".allShowListingsContainer");
+const tvShowsContainer = document.querySelector(".tvShowsContainer");
+const allShowListingsContainer = document.querySelector(
+  ".allShowListingsContainer"
+);
+//buttons tabs
+//show and hide containers
+
+//the reason for the repetition is that
+// 1 my brain turned into mush
+// 2 the layout was breaking and not showing anything whn applied straight in css
+episodesButton.addEventListener("click", () => {
+  allShowsContainer.classList.add("hidden");
+  tvShowsContainer.classList.remove("hidden");
+  episodesButton.classList.add("active");
+  showsButton.classList.remove("active");
+  allShowListingsContainer.classList.add("hidden");
+  allShowListingsContainer.classList.remove("allShowListingsContainerLook");
+});
+
+showsButton.addEventListener("click", () => {
+  tvShowsContainer.classList.add("hidden");
+  allShowsContainer.classList.remove("hidden");
+  episodesButton.classList.remove("active");
+  showsButton.classList.add("active");
+
+  allShowListingsContainer.classList.remove("hidden");
+  allShowListingsContainer.classList.add("allShowListingsContainerLook");
+});
+
+// Fetch and display all shows
+async function getSHowsWhenUserVisits() {
+  // const response = await fetch(endpointAllShows);
+  // here it was technically calling the same endpoint which is not in line with requirement
+  ////////////////////////////
+  const response = await fetch(endpointAllShows);
+  const shows = await response.json();
+  displayShowsOnVisit(shows);
+  allShowListingsContainer.classList.add("allShowListingsContainerLook");
+}
+
+//show all sghows to user this is repurposing the code from earlier
+function displayShowsOnVisit(shows) {
+  const allShows = document.querySelector(".allShowListingsContainer");
+  allShows.innerHTML = ""; // Clear existing content
+
+  shows.forEach((show) => {
+    const showCard = document.createElement("div");
+    showCard.classList.add("showCard");
+
+    const showName = document.createElement("h2");
+    showName.classList.add("showName");
+    showName.textContent = show.name;
+    showName.addEventListener("click", () => displayEpisodesForShow(show.id));
+
+    const showImage = document.createElement("img");
+    showImage.classList.add("showImage");
+    showImage.src = show.image?.medium;
+    showImage.alt = `Image of ${show.name}`;
+
+    const showSummary = document.createElement("p");
+    showSummary.classList.add("showSummary");
+    showSummary.innerHTML = show.summary;
+
+    const showDetails = document.createElement("p");
+    showDetails.classList.add("showDetails");
+    showDetails.textContent = `Genres: ${show.genres.join(", ")} Status: ${
+      show.status
+    } Rating: ${show.rating.average} Runtime: ${show.runtime} min`;
+
+    showCard.appendChild(showName);
+    showCard.appendChild(showImage);
+    showCard.appendChild(showSummary);
+    showCard.appendChild(showDetails);
+
+    allShows.appendChild(showCard);
+  });
+}
+// show names, genres, and summary texts
+
+const findShowButton = document.querySelector("#findShowButton");
+
+const findWithinAShow = () => {
+  const userSearchTermShows = document
+    .querySelector("#showSearchInput")
+    .value.toLowerCase();
+
+  // Filter shows based on the search term
+  const filteredShows = dropdownShowsArray.filter((show) => {
+    // Convert relevant fields to lowercase for case-insensitive search
+    const name = show.name.toLowerCase();
+    const genres = show.genres.join(", ").toLowerCase();
+    const summary = show.summary?.toLowerCase() || "";
+
+    // Check if the search term is in the name, genres, or summary
+    return (
+      name.includes(userSearchTermShows) ||
+      genres.includes(userSearchTermShows) ||
+      summary.includes(userSearchTermShows)
+    );
+  });
+
+  //apply filter
+  displayShowsOnVisit(filteredShows);
+};
+
+findShowButton.addEventListener("click", findWithinAShow);
 
 window.onload = setup;
