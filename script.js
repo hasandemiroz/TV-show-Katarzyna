@@ -19,7 +19,7 @@ const formatSE = (episode) => {
           <p class="episodeCode">fff</p>
           <img
             class="episodeImage"
-            src="https://picsum.photos/200/300"
+            src="https://picsum.photos/350/450"
             alt="tv show image"
           />
           <p class="episodeDescription"></p>
@@ -50,7 +50,9 @@ const generateCard = (episode) => {
 
   const episodeImage = document.createElement("img");
   episodeImage.classList.add("episodeImage");
-  episodeImage.src = "https://picsum.photos/200/300";
+  // episodeImage.src = "https://picsum.photos/200/300"; placeholder img for the time being
+  // if image is missing for some reason, placehodlder so the content looks consistent
+  episodeImage.src = episode.image?.medium || "https://picsum.photos/300/450";
 
   const episodeDescription = document.createElement("p");
   episodeDescription.classList.add("episodeDescription");
@@ -142,8 +144,7 @@ const showCountToUser = (filteredEpisodes) => {
 findButton.addEventListener("click", findEpisode);
 
 //////////////////////////////////////////////////////////
-//live search - tried impementing but it was not working after maaany attempts and
-// I have a search and clear buttons and a filter instead task-200
+//search and clear buttons and a filter instead task-200
 
 const useClearButton = document.querySelector("#clearButton");
 
@@ -154,6 +155,38 @@ useClearButton.addEventListener("click", () => {
   makePageForEpisodes(allEpisodes);
   showCountToUser(allEpisodes);
 });
+
+//live search
+// Live search functionality
+const liveSearchInput = document.querySelector("#liveSearchInput");
+
+const liveSearch = () => {
+  // grab user input
+  const userSearchTerm = liveSearchInput.value.toLowerCase();
+
+  // filter episodes by title or summary (case-insensitive)
+  const filteredEpisodes = allEpisodes.filter((episode) => {
+    const title = episode.name.toLowerCase();
+    const summary = episode.summary?.toLowerCase() || "";
+    return title.includes(userSearchTerm) || summary.includes(userSearchTerm);
+  });
+
+  // show the count to user
+  showCountToUser(filteredEpisodes);
+
+  // reload episodes view
+  makePageForEpisodes(filteredEpisodes);
+
+  // toggle counter visibility
+  if (userSearchTerm === "") {
+    counterDiv.classList.add("hidden");
+  } else {
+    counterDiv.classList.remove("hidden");
+  }
+};
+
+// event listener for live input
+liveSearchInput.addEventListener("input", liveSearch);
 
 ///////////////////////
 // LVL 300
@@ -169,7 +202,7 @@ useClearButton.addEventListener("click", () => {
 
 //no need to put in state becuae of the global array at the top  (allEpisodes)
 
-const endpoint = "https://api.tvmaze.com/shows/82/episodes";
+// const endpoint = "https://api.tvmaze.com/shows/82/episodes";
 
 // courswork example
 // const fetchFilms = async () => {
@@ -177,10 +210,11 @@ const endpoint = "https://api.tvmaze.com/shows/82/episodes";
 //   return await response.json();
 // };
 
-const fetchEpisodes = async () => {
-  const response = await fetch(endpoint);
-  return await response.json();
-};
+//my fetch based on teh coursework
+// const fetchEpisodes = async () => {
+//   const response = await fetch(endpoint);
+//   return await response.json();
+// };
 
 //coursework example
 // fetchFilms().then((films) => {
@@ -188,33 +222,139 @@ const fetchEpisodes = async () => {
 //   render(); <---- I am using makePageForEpisodes instead of render
 // });
 
+//mine based on the coursework example
+// function fetchOnce() {
+//   //show loading to user
+//   document.querySelector(".waiting").classList.remove("hidden");
+
+//placed response here  so I can check response status
+// const response = fetch(endpoint);
+
+// fetchEpisodes().then((episodesFromAPI) => {
+//below is my attempt on displaying an error to the user
+// if (episodesFromAPI.status !== 200) { this check did not work, stuck at loading
+// if (!episodesFromAPI) { this is stuck at loading again
+// if (!Array.isArray(episodesFromAPI) || episodesFromAPI.length === 0) { here also stuck on the loading screen
+
+//this is how i wanted to check for the error
+// if (!episodesFromAPI) {
+//display error to user
+// alert("Oops! Something went wrong. Please try again later.");
+// } else {
+
+// populate the declared at the top empty array with episodes and show
+//   allEpisodes = episodesFromAPI;
+//   makePageForEpisodes(episodesFromAPI);
+// });
+
+// show the count to user
+// hide loading for the user
+//   document.querySelector(".waiting").classList.add("hidden");
+// }
+
+// here's the fixed so the error message works and deosn't get stuck on loading
+
+const endpoint = "https://api.tvmaze.com/shows/82/episodes";
+
+// implementation with correct error message
+const fetchEpisodes = async () => {
+  try {
+    const response = await fetch(endpoint);
+
+    // check if 200
+    if (!response.ok) {
+      throw new Error("Fetching episodes failed.");
+    }
+
+    // if 200 continue
+    const episodesFromAPI = await response.json();
+
+    // if episodesFromAPI is not an array
+    if (!Array.isArray(episodesFromAPI)) {
+      throw new Error("Episodes not found.");
+    }
+    // if is an array continue
+    return episodesFromAPI;
+
+    // //solution including catch block to log error to fix the forever loading
+  } catch (error) {
+    // console.error("Error fetching episodes:", error); to lor error properly
+    //message shown to the user in case of an error
+    alert("Oops! Something went wrong :( Please try again.");
+    // in case of an error we return null
+    return null;
+  }
+};
+
+// Fetch episodes and update the UI
 function fetchOnce() {
-  //show loading to user
+  // Show loading to user
   document.querySelector(".waiting").classList.remove("hidden");
 
-  //placed response here  so I can check response status
-  // const response = fetch(endpoint);
+  // Fetch episodes and handle the result
+  fetchEpisodes()
+    .then((episodesFromAPI) => {
+      // Check if episodesFromAPI is null (in case of an error)
+      if (!episodesFromAPI) {
+        alert(
+          "Oops! No episodes found or there was an error fetching the episodes."
+        );
+      } else {
+        // Populate the declared at the top empty array with episodes and show
+        allEpisodes = episodesFromAPI;
+        makePageForEpisodes(episodesFromAPI);
+      }
 
-  fetchEpisodes().then((episodesFromAPI) => {
-    //below is my attempt on displaying an error to the user
-    // if (episodesFromAPI.status !== 200) { this check did not work, stuck at loading
-    // if (!episodesFromAPI) { this is stuck at loading again
-    // if (!Array.isArray(episodesFromAPI) || episodesFromAPI.length === 0) { here also stuck on the loading screen
+      // Hide loading for the user (this should be inside the then block)
+      document.querySelector(".waiting").classList.add("hidden");
+    })
+    .catch((error) => {
+      // If there's an error during the fetch or JSON parsing
+      console.error("Error:", error);
+      alert("Oops! Something went wrong. Please try again later.");
 
-    //this is how i wanted to check for the error
-    // if (!episodesFromAPI) {
-    //display error to user
-    // alert("Oops! Something went wrong. Please try again later.");
-    // } else {
-
-    // populate the declared at the top empty array with episodes and show
-    allEpisodes = episodesFromAPI;
-    makePageForEpisodes(episodesFromAPI);
-  });
-
-  // show the count to user
-  // hide loading for the user
-  document.querySelector(".waiting").classList.add("hidden");
+      // Hide loading for the user in case of error as well
+      document.querySelector(".waiting").classList.add("hidden");
+    });
 }
+
+///////////////lvl 400
+
+// const select = document.querySelector("#select");
+
+// // Array to hold all shows from the dropdown
+// let dropdownShowsArray = [];
+
+// // Get all shows from the API and add them to dropdown
+// async function fetchAllShows() {
+//   const response = await fetch("https://api.tvmaze.com/shows");
+//   const showsFromAPI = await response.json();
+
+//   // Store shows in array
+//   dropdownShowsArray = showsFromAPI;
+
+//   // Sort show names alphabetically (simplified)
+//   dropdownShowsArray.sort((a, b) =>
+//     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+//   );
+
+//   // Add all shows to dropdown menu
+//   addShowsToDropdown(dropdownShowsArray);
+// }
+
+// // dropdown
+// // add list from api
+// // dropdon highlight
+// // onclick select open
+
+// // add to dropdown
+// function addShowsToDropdown(shows) {
+//   shows.forEach((show) => {
+//     const option = document.createElement("option");
+//     option.textContent = show.name;
+//     option.value = show.id;
+//     select.appendChild(option);
+//   });
+// }
 
 window.onload = setup;
