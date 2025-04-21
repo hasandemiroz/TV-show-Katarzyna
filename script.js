@@ -1,5 +1,6 @@
 //global vars
 let allEpisodes = []; //so I can access in other functions
+
 const searchBox = document.querySelector("#searchBox");
 //to hide counterDiv by default
 const counterDiv = document.querySelector(".counterDiv");
@@ -46,7 +47,7 @@ const generateCard = (episode) => {
   // const episodeSeason = document.createElement("p");
   // const episodeNumber = document.createElement("p");
   episodeCode.classList.add("episodeCode");
-  episodeCode.textContent = formatSE(episode); // Set the formatted episode code to textContent
+  episodeCode.textContent = formatSE(episode); //here innerHTML was breaking
 
   const episodeImage = document.createElement("img");
   episodeImage.classList.add("episodeImage");
@@ -84,7 +85,7 @@ function makePageForEpisodes(episodeList) {
 function setup() {
   fetchOnce();
   // allEpisodes = getAllEpisodes(); //edited to use for filter - replaced by fetchOnce
-
+  fetchAllShows();
   makePageForEpisodes(allEpisodes);
 }
 
@@ -286,75 +287,158 @@ const fetchEpisodes = async () => {
   }
 };
 
-// Fetch episodes and update the UI
+// fetchOnce
 function fetchOnce() {
-  // Show loading to user
+  // show loading to user
   document.querySelector(".waiting").classList.remove("hidden");
 
-  // Fetch episodes and handle the result
+  // grab episodes
   fetchEpisodes()
     .then((episodesFromAPI) => {
-      // Check if episodesFromAPI is null (in case of an error)
+      // if we have an error
       if (!episodesFromAPI) {
-        alert(
-          "Oops! No episodes found or there was an error fetching the episodes."
-        );
+        alert("Oops! Something went wrong :( Please try again.");
       } else {
-        // Populate the declared at the top empty array with episodes and show
+        // continue to populate the declared at the top empty array with episodes and show
         allEpisodes = episodesFromAPI;
         makePageForEpisodes(episodesFromAPI);
       }
 
-      // Hide loading for the user (this should be inside the then block)
+      // hide loading messge
       document.querySelector(".waiting").classList.add("hidden");
     })
     .catch((error) => {
-      // If there's an error during the fetch or JSON parsing
-      console.error("Error:", error);
-      alert("Oops! Something went wrong. Please try again later.");
+      // if error happens we display a message to the user
+      // console.error("Error:", error); tto log error properly
+      alert("Oops! Something went wrong :( Please try again.");
 
-      // Hide loading for the user in case of error as well
+      // hide loading if we have an error
       document.querySelector(".waiting").classList.add("hidden");
     });
 }
 
 ///////////////lvl 400
+const select = document.querySelector("#select");
 
-// const select = document.querySelector("#select");
+let dropdownShowsArray = [];
+// episodes can beaccessed by id later
+let dropdownShowEpisodes = {};
 
-// // Array to hold all shows from the dropdown
-// let dropdownShowsArray = [];
+const endpointAllShows = "https://api.tvmaze.com/shows";
 
-// // Get all shows from the API and add them to dropdown
-// async function fetchAllShows() {
-//   const response = await fetch("https://api.tvmaze.com/shows");
-//   const showsFromAPI = await response.json();
+// fetch all shows from the API and add them to the dropdown
+async function fetchAllShows() {
+  const response = await fetch(endpointAllShows);
 
-//   // Store shows in array
-//   dropdownShowsArray = showsFromAPI;
+  // check if response is successful
+  const showsFromAPI = await response.json();
 
-//   // Sort show names alphabetically (simplified)
-//   dropdownShowsArray.sort((a, b) =>
-//     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-//   );
+  // place the shows in dropdownShowsArray
+  dropdownShowsArray = showsFromAPI;
 
-//   // Add all shows to dropdown menu
-//   addShowsToDropdown(dropdownShowsArray);
+  // sort shows alphabetically and case-insensitive requirement
+  // sample solution
+  // function insensitive(s1, s2) {
+  //   var s1lower = s1.toLowerCase();
+  //   var s2lower = s2.toLowerCase();
+  //   return s1lower > s2lower ? 1 : (s1lower < s2lower ? -1 : 0);
+  // }
+  //repurposed
+  // Define the function that will compare two show names
+  const sortShows = (s1, s2) => {
+    const showTitleA = s1.toLowerCase();
+    const showTitleB = s2.toLowerCase();
+    return showTitleA > showTitleB ? 1 : showTitleA < showTitleB ? -1 : 0;
+  };
+
+  // sort alprabetically show name = title
+  dropdownShowsArray.sort((a, b) => sortShows(a.name, b.name));
+  //a more elegant solution found is
+  // dropdownShowsArray = showsFromAPI.sort((a, b) =>
+  //   a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  // );
+
+  // add all shows to dropdown
+  addShowsToDropdown(dropdownShowsArray);
+}
+
+// add shows to dropdown
+function addShowsToDropdown(shows) {
+  //repurposing code from earlier
+  // const episodeDescription = document.createElement("p");
+  // episodeDescription.classList.add("episodeDescription");
+  // episodeDescription.innerHTML = episode.summary;
+  // episodeCard.appendChild(episodeName);
+
+  // add optionschildren to dropdown looping pver each show
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.innerHTML = show.name;
+    //here id needs to be added otherwise there is an error and does not display
+    option.value = show.id;
+    select.appendChild(option);
+  });
+}
+
+// add event listener to dropdown wih all shows
+select.addEventListener("change", function (event) {
+  // gget id  of the show
+  const showId = event.target.value;
+
+  // check if a show is selected
+  if (showId) {
+    // fgrab and display selection
+    fetchEpisodesForShow(showId).then(function (episodes) {
+      // show in allEpisodes array
+      allEpisodes = episodes;
+
+      // display the episodes
+      makePageForEpisodes(episodes);
+    });
+  }
+});
+
+// grab episodes for a selected show this is causing an
+// issue of multiple fetches and stopped working after my attempts to fix
+// async function fetchEpisodesForShow(showId) {
+//   // requirement to only fetch once check if inside object dropdownShowEpisodes
+//   if (dropdownShowEpisodes[showId]) {
+//     return dropdownShowEpisodes[showId];
+//   } else {
+//     const endpointId = `https://api.tvmaze.com/shows/${showId}/episodes`;
+
+//     const response = await fetch(endpointId);
+//     const episodes = await response.json();
+//     dropdownShowEpisodes[showId] = episodes;
+//   }
+//   return episodes;
 // }
 
-// // dropdown
-// // add list from api
-// // dropdon highlight
-// // onclick select open
+// so the above is split ito 2
+// / function to fetch episodes per show once and store them
+async function fetchEpisodesForShow(showId) {
+  const endpointId = `https://api.tvmaze.com/shows/${showId}/episodes`;
 
-// // add to dropdown
-// function addShowsToDropdown(shows) {
-//   shows.forEach((show) => {
-//     const option = document.createElement("option");
-//     option.textContent = show.name;
-//     option.value = show.id;
-//     select.appendChild(option);
-//   });
-// }
+  // fetch
+  const response = await fetch(endpointId);
+  const episodes = await response.json();
+
+  // store the episodes in dropdownShow
+  dropdownShowEpisodes[showId] = episodes;
+
+  // return the episodes
+  return episodes;
+}
+
+// function to get episodes for a show by id, using the cache if available
+async function getEpisodesForShowById(showId) {
+  // check if episodes for this show are already in the cache
+  if (dropdownShowEpisodes[showId]) {
+    return dropdownShowEpisodes[showId];
+  } else {
+    // if not in cache, fetch them
+    return await fetchEpisodesForShow(showId);
+  }
+}
 
 window.onload = setup;
