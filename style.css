@@ -45,7 +45,8 @@
 }
 
 /*search box lvl 200*/
-.searchBox {
+.searchBox,
+.liveSearchBox {
   width: 100%;
   padding: 1rem;
   background-color: #f9f9f9;
@@ -54,10 +55,30 @@
   border-radius: 8px;
   box-sizing: border-box;
 }
+.liveSearchBox {
+  margin-top: 1rem;
+}
+
+#select {
+  width: 300px;
+  padding: 1rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
 
 #searchInput {
-  width: 1400px;
-  max-width: 1400px;
+  width: 1000px;
+  max-width: 1000px;
+  padding: 1rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+#liveSearchInput {
+  width: 1000px;
+  max-width: 1000px;
   padding: 1rem 0.5rem;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -76,8 +97,9 @@
   cursor: pointer;
   margin-top: 1rem;
 }
+
 #clearButton {
-  color: #white;
+  color: white;
   background-color: lightgrey;
 }
 
