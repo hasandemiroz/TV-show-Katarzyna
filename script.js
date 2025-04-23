@@ -35,7 +35,12 @@ const generateCard = (episode) => {
 
   const episodeImage = document.createElement("img");
   episodeImage.classList.add("episodeImage");
-  episodeImage.src = "https://picsum.photos/200/300";
+    if (episode.image && episode.image.medium) {
+    episodeImage.src = episode.image.medium;
+  } else {
+    episodeImage.src = "https://via.placeholder.com/210x295?text=No+Image";
+  }
+  episodeImage.alt = episode.name + " image";
 
   const episodeDescription = document.createElement("p");
   episodeDescription.classList.add("episodeDescription");
